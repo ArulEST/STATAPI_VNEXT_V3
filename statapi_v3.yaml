@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.0
 info:
-  # version: v1
+  version: v2
   title: STATAPI-vNEXT
   x-logo:
     # url: '../Image/logo.png'
@@ -9,7 +9,7 @@ info:
     altText: STAT logo
 
 tags:
-  - name: vNEXT
+  - name: Order Creation
     description: |
       # Process Flow Diagram
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The objective is to enhance the performance of our application by optimizing response times. 
@@ -167,7 +167,9 @@ tags:
 
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The trk.WebhookNotification.WebhookUrl and trk.WebhookNotification.WebhookParams of the retrieved records are sent to an HTTPS POST request. The resulting response status and messages are recorded in the trk.WebhookNotification.Status and trk.WebhookNotification.Message columns within the trk.WebhookNotification table.      
 
-      # Temp Order
+      # Code Snippet
+        ## Temp Order
+
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The order request header key is verified against the API key in Cosmos DB.  
 
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the key is found in Cosmos DB, the isvalid status will be set to True. 
@@ -222,7 +224,8 @@ tags:
 
         <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/vnext_order_9.png" />
 
-      # Service Bus
+        ## Service Bus
+          
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The Azure function called "<b>customorderprocess</b>" is configured as depicted in the image. 
 
         <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Servicebus/vnext_servicebus_config.png" />
@@ -235,7 +238,8 @@ tags:
 
         <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Servicebus/vnext_servicebus_2.png" />
 
-      # Azure function
+        ## Azure function
+          
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The Azure function called "CustomOrder" is configured as depicted in the image. 
 
         <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Azure_Function/vnext_azurefunction_config.png" />
@@ -270,7 +274,8 @@ tags:
         
         <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Azure_Function/vnext_azurefunction_3.png" />
 
-      # Push Order status history to Cosmos 
+        ## Push Order status history to Cosmos 
+        
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The order's status undergoes changes as it progresses through various stages during shipment, starting from order submission until it is delivered. To maintain a comprehensive order history, a dedicated mechanism has been implemented to record and synchronize this history with Cosmos.   
         
         In this process, three new columns have been introduced in the order history table named TRK.OrderStatusHistory, which facilitate the synchronization of order statuses with a Service Bus and subsequently with Cosmos: 
@@ -301,13 +306,13 @@ tags:
 x-tagGroups:
   - name: General
     tags:
-      - vNEXT
+      - Order Creation
 
 paths:
   /api/V2/Createorder:
     post:
       tags:
-        - vNEXT
+        - Order Creation
       summary: Create an Order
       operationId: Orders_CreateOrder
       description: This API endpoint facilitates the creation of a customer's order by capturing essential information such as quantities, prices, and location details. 
@@ -352,7 +357,7 @@ paths:
   /api/v2/orderdetails:
     get:
       tags:
-        - vNEXT
+        - Order Creation
       summary: Order Tracking
       operationId: Orders_Getorderdetails
       description: This API endpoint facilitates the retrieval of shipment order status information.  
