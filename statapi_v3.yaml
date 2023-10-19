@@ -11,7 +11,7 @@ info:
 tags:
   - name: Order Creation
     description: |
-      # Process Flow Diagram
+      # Process Flow 
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The objective is to enhance the performance of our application by optimizing response times. 
 
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; To facilitate the seamless integration of a high-volume client into our application, we use Cosmos database that significantly improved response times, reducing the processing time for order requests.  
@@ -23,7 +23,7 @@ tags:
         
         <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Image/flowchart.png" />
 
-      # Work Flow Diagram
+      # Work Flow 
         <h2>Validation with Header-bound API keys</h2>
         
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; With the header-bound API keys, the validation is performed. When a vNext order creation endpoint is triggered, the API Key Message Handler validates the API key from the request header against the key available in the Cosmos DB, which currently serves as the central repository for API key validation. 
@@ -274,35 +274,33 @@ tags:
         
         <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Azure_Function/vnext_azurefunction_3.png" />
 
-        ## Push Order status history to Cosmos 
+        ## CreateOrder Cosmos to Sql 
+
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Cosmostosql/Cosmostosql_1.png" />
         
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The order's status undergoes changes as it progresses through various stages during shipment, starting from order submission until it is delivered. To maintain a comprehensive order history, a dedicated mechanism has been implemented to record and synchronize this history with Cosmos.   
+        The temporarily created order records in Cosmos are subsequently transferred to SQL based on the conditions and steps outlined below:  
         
-        In this process, three new columns have been introduced in the order history table named TRK.OrderStatusHistory, which facilitate the synchronization of order statuses with a Service Bus and subsequently with Cosmos: 
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Retrieve the response from CosmosOrder function.   
         
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>IsSyncCosmosUpdated:</b> This column indicates whether a record has been synchronized in Cosmos. The default value is set to False. 
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Within the Service Bus, the CosmosOrder method is deserialized to extract the requestId. This requestId is then forwarded to the CreateOrderInSql method.   
         
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>IsSyncCosmosUpdateEnabled:</b> This column serves as a condition that determines whether a record should be pushed to Cosmos.  
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The CreateOrderInSql method retrieves the order collection details from the OrderDetails table in Cosmos. It verifies if the requestId exists for the retrieved orders. The order records associated with the requestId are then processed. If Order.OrderInDto.IsSyncCosmosOrder is set to True, the records are fetched from Cosmos and stored in SQL. 
         
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>IsPushCosmosUpdated:</b> This column signifies whether a record has been successfully pushed to Cosmos. The default value is set to False. 
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Cosmostosql/Cosmostosql_2.png" />    
         
-        To achieve this synchronization, a timer function is employed to select updated records from the past 24 hours and evaluate with the following conditions: 
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Verify the values of OrderInDto and Order. If they are either null or empty, skip the process. Otherwise, if they contain valid values, execute the PostOrderUsingSTAT_API method, an existing method designed for order creation. To initiate this method, pass the parameters Apikey and OrderInDto (in JSON format).
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the response from PostOrderUsingSTAT_API is either null, empty, or an error, the process fails. Conversely, if the PostOrderUsingSTAT_API response yields a value, it will be mapped to OrderOutDto schema. 
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Next, check if orderOutDto.TrackingNumber exists for the order and map the return response to the Order schema. 
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; In the OrderStatusValues table, search for the list of records with the IsActive flag. Retrieve the active records and confirm if the very first or default StatusKey value is "submitted". If yes, gather those records.
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Next, confirm whether the WebhookGroupStatus.OrderStatusId contains the "submitted" response ID and ensure it matches with OrderStatusValues.OrderStatusValueId.. If this condition is not met, the response value will be set to 0, and the process halts. If it is greater than 0, continue with saving the response in the WebhookNotifications table.  
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Serialize the OrderOutDto, and store the value in WebhookBody. 
+
         
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If IsSyncCosmosUpdated is set to False, IsSyncCosmosUpdateEnabled is True, and IsPushCosmosUpdated is False, the updated record will be pushed to Cosmos.  
-        
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; When IsSyncCosmosUpdateEnabled is set to False, no push operation will take place.  
-        
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Once a record is successfully pushed to Cosmos, IsPushCosmosUpdated will be set to True, confirming the successful push.  
-        
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; When the record is successfully created in Cosmos, IsSyncCosmosUpdated will be set to True.  
-        
-        Upon the completion of this process, the status of the three columns will be as follows:
-        
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; IsSyncCosmosUpdated: True 
-        
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; IsSyncCosmosUpdateEnabled: True  
-        
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; IsPushCosmosUpdated: True 
 x-tagGroups:
   - name: General
     tags:
