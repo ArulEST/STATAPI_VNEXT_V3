@@ -368,7 +368,7 @@ paths:
           required: true
           schema:
             type: string
-          example: T23023232327  
+          # example: T23023232327  
       responses:
         "200":
           description: OK successful operation
