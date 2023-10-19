@@ -168,7 +168,7 @@ tags:
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The trk.WebhookNotification.WebhookUrl and trk.WebhookNotification.WebhookParams of the retrieved records are sent to an HTTPS POST request. The resulting response status and messages are recorded in the trk.WebhookNotification.Status and trk.WebhookNotification.Message columns within the trk.WebhookNotification table.      
 
       # Code Snippet
-        ## Temp Order
+        ## Temporary  Order
 
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The order request header key is verified against the API key in Cosmos DB.  
 
