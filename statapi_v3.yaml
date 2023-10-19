@@ -1,0 +1,1047 @@
+---
+openapi: 3.0.0
+info:
+  # version: v1
+  title: STATAPI-vNEXT
+  x-logo:
+    # url: '../Image/logo.png'
+    url: 'https://arulest.github.io/STATAPI_VNEXT_V3/Image/logo.png'
+    altText: STAT logo
+
+tags:
+  - name: vNEXT
+    description: |
+      # Process Flow Diagram
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The objective is to enhance the performance of our application by optimizing response times. 
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; To facilitate the seamless integration of a high-volume client into our application, we use Cosmos database that significantly improved response times, reducing the processing time for order requests.  
+        <h2>Concept</h2>
+        
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; When the user hits the new endpoint, it interacts with Cosmos, creates a temporary record and returns the response to the user with a standard set of information. 
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; A distinct process is executed which retrieves the temporary records from Cosmos and generates an order in SQL DB.  
+        
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Image/flowchart.png" />
+
+      # Work Flow Diagram
+        <h2>Validation with Header-bound API keys</h2>
+        
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; With the header-bound API keys, the validation is performed. When a vNext order creation endpoint is triggered, the API Key Message Handler validates the API key from the request header against the key available in the Cosmos DB, which currently serves as the central repository for API key validation. 
+        
+        <h2>Workflow Procedure</h2>
+      
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the validation fails due to the non-existence of the API key in the Cosmos DB, the process halts, triggering an exception with the message "<i>API key is invalid</i>". 
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Once the request header key is validated, using STAT base API controller, the customer API key, feature flag and price set of the customer have to be fetched from the cosmos DB. 
+        
+        <h2>JSON Validation</h2>
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The next step is to verify the input JSON, by checking whether the order endpoint holds the serviceable zip code and valid price set.  
+          
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Zipcode validation</b> - With the predefined conditions stored in the Cosmos DB, the zip code will be checked if it comes under the serviceable proximity region. 
+          
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Price set validation</b> - If the customer has the valid price set, the order request will be stored in the Cosmos DB.  
+
+        <h2>Results:</h2>
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Success</b> - When the zip code and price set validation succeed, a success response is generated confirming the order creation. 
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Failure</b> - However, if the validation fails due to zip code or price set, the order request is not stored, and the system generates the exceptions as a response.
+      
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Image/workflow.png" />
+      
+        <h2>Master data that exists in Cosmos:</h2>
+          <ul>
+            <li>API key</li>
+            <li>ZipCodes</li>
+          </ul>
+
+      # Master Sync
+        <h2>Automatic</h2>
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; There are two Azure functions employed to synchronize master data from SQL to Cosmos DB, scheduled to run daily at 2 AM. 
+
+        <ul>
+          <li>SyncCustomerValues</li>
+          <li>SyncZipCode</li>
+        </ul>
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; In the automatic mode, if any modifications occur in the customer API key outside of application, <b>SyncCustomerValues</b> function automatically detects these changes and transmits the updated information to the Azure service bus for customer data synchronization in Cosmos.  
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If no changes are detected, the system sends the existing data for synchronization. This process occurs daily at 2 AM. 
+
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/vnext_mastersync_1.png" />
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If any modifications occur in the Zip code, <b>SyncZipCode</b> function automatically detects these changes and transmits the updated information to the Azure service bus for customer data synchronization in Cosmos.   
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If no changes are detected, the system sends the existing data for synchronization. This process occurs daily at 2 AM. 
+
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/vnext_mastersync_2.png" />
+
+        <h2>Manual</h2> 
+
+        <h3>ZipCode Sync Cosmos</h3>
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the zip code is modified via the STAT app portal, the “<b>ZipCodeSyncCosmos</b>” function will trigger a request to the Azure service bus instantly to synchronize the updated zip code information with Cosmos DB. 
+
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/vnext_mastersync_3.png" />
+
+        <h3>Customer Sync Cosmos</h3>
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the customer API key is modified via the STAT app portal, the “<b>CustomerSyncCosmos</b>” function will trigger a request to the Azure service bus instantly to synchronize the updated zip code information with Cosmos DB. 
+
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/vnext_mastersync_4.png" />
+        
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; With the help of customer's ID, customer's API key is checked and the newly received data will be applied as updates for that specific customer. 
+
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/vnext_mastersync_1_1.png" />
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/vnext_mastersync_1_2.png" />
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; With the help of customer's ID, the zip code is checked and the newly received data will be applied as updates for that specific customer.
+
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/vnext_mastersync_2_1.png" />
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/vnext_mastersync_2_2.png" />
+
+      # Webhook 
+        <b>To set up a webhook in the STAT portal, follow these steps:</b>
+
+        Navigate to the main menu on the STAT portal at
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; https://statqastage.azurewebsites.net
+        
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; From the main menu, select "Manage Customer" under user management.  
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Next to each client, click on "View" to access their details.  
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Within the client's details, locate and click the "Create Webhook" button. 
+
+        In the provided form, do the following:  
+
+        <ul>
+          <li>Choose the required order status value.</li>
+          <li>Enter the Webhook URL.</li>
+          <li>Add any necessary Webhook parameters.</li>
+          <li>Note that Authentication is optional. If selected, provide both the key and value data.</li>
+        </ul>   
+        
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Once the details are submitted, whether with or without parameters, they will be securely stored in the table trk.WebhookNotification. 
+        
+        <b>OTServer:</b> 
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OTServer/vnext_otserver_1.png" />
+        
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; In the OTServer, the QueueManager class periodically checks the status of QueueManagerCustomerWebhook every 10 seconds. If the status is false, the ProcessWebHookNotifications method is executed.  
+      
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Records from the trk.WebhookNotification table are selected based on the following conditions:
+        <ul>
+          <li>The InsertDate must be within the last 10 days.  </li>
+          <li>The Retry count should be less than 10.  </li>
+          <li>The Status should not be equal to "Success."</li>
+        </ul>   
+
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OTServer/vnext_otserver_2.png" />
+       
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The trk.WebhookNotification.WebhookUrl and trk.WebhookNotification.WebhookParams of the retrieved records are sent to an HTTPS POST request. The resulting response status and messages are recorded in the trk.WebhookNotification.Status and trk.WebhookNotification.Message columns within the trk.WebhookNotification table.  
+        
+        <ul>
+          <li>Within the trk.WebhookNotification.Status column, the response status, denoting success or failure, is stored, with the default value set as null.  </li>
+          <li>In the trk.WebhookNotification.Message column, response messages are stored, with "New" as the default value. Successful responses are saved as "success," while error messages are displayed as follows, ...  </li>
+          <ul>
+            <li>Service Unavailable</li>
+            <li>Not Found </li>
+            <li>An attempt was made to access a socket in a way forbidden by its access permissions.  </li>
+            <li>NULL</li>
+            <li>No such host is known. (m3msuo66nk.execute-api.us-west-2.amazonaws.com:443)  </li>
+          </ul>
+        </ul> 
+
+        <b>Service Bus:</b>  
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/ServiceBus/vnext_servicebus_1.png" />
+        
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; In the Service Bus, the customerwebhooknotification method is deserialized to obtain the WebhooknotificationId, which is then passed to the ProcessCustomerWebhookNotification method.   
+      
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/ServiceBus/vnext_servicebus_2.png" />
+      
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; In the SystemFeatureFlags table, a check is performed to ensure that the column ProcessName is equal to "ProcessName.QueueManagerCustomerWebhook," and the IsServiceBusEnable column is set to true. If this condition is met, the parameter value WebhooknotificationId is checked for its existence in the WebhookNotifications table.  
+        
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the value returned is 0, the process ends. Otherwise, a record is fetched from the trk.WebhookNotification table.  
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The trk.WebhookNotification.WebhookUrl and trk.WebhookNotification.WebhookParams of the retrieved records are sent to an HTTPS POST request. The resulting response status and messages are recorded in the trk.WebhookNotification.Status and trk.WebhookNotification.Message columns within the trk.WebhookNotification table.      
+
+      # Temp Order
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The order request header key is verified against the API key in Cosmos DB.  
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the key is found in Cosmos DB, the isvalid status will be set to True. 
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the key is not found in Cosmos DB, the request header key is then checked against the ASP Net user table ID in the SQL DB. 
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the validation is successful, the isvalid status will be set to True. 
+
+
+
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/vnext_order_1.png" />
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the validation is unsuccessful, verify whether the Bearer token is present in the header and that the parameter is not empty.
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the Bearer token is absent, examine the header for parameters with the keys "type," "wise," and "scheduler." If any one of these parameters is present, set isvalid to true. 
+
+
+        
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/vnext_order_2.png" />
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; When an order is initiated from the STAT Portal, the CustomerId found in the header is employed to authenticate the endpoint request. 
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the customer ID is found in the SQL table, the isvalid status is set to true.  
+
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/vnext_order_3.png" />
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If none of the above-mentioned conditions are met, and if the endpoint is "api/OnTimeUpdates", isvalid will be set to true. For all other endpoints, isvalid will be false, and the response returned will be "<i>Api Key Not Valid</i>." 
+
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/vnext_order_4.png" />
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Verify the API key in Cosmos DB and confirm whether the retrieved key exists in the customer table. If it exists, associate it with the API key list; if not, raise an exception “<i>Something went wrong. Please contact STAT support</i>” 
+
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/vnext_order_5.png" />
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Validate the Create Order request values against the collection and delivery location details. 
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; First, verify that the address Line 1, City, State, and Postal code are valid. If any of these details are invalid, send the respective exceptions. 
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Next, ensure that the "Deliverysignaturerequired" condition is true, the "isadultsignature" condition in the orderDTO is also true, and the signature type is not empty. All these conditions collectively indicate that the order is ready to be placed. 
+
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/vnext_order_6.png" />
+        
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Validate if the delivery zip code falls within the serviceable region and if there is a valid price set for the customer. 
+
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/vnext_order_7.png" />
+        
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If all the above conditions are met, "Create Order" values are stored in Cosmos DB. 
+
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/vnext_order_8.png" />
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Trigger an entry to the service bus “<b>customorderprocess</b>” 
+
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/vnext_order_9.png" />
+
+      # Service Bus
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The Azure function called "<b>customorderprocess</b>" is configured as depicted in the image. 
+
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Servicebus/vnext_servicebus_config.png" />
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The Cosmos DB temporary order record includes a UID, which is a unique identifier generated by STAT for each order. This UID is transmitted to the service bus. 
+
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Servicebus/vnext_servicebus_1.png" />
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The order's UID is subsequently passed to the service bus for processing. 
+
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Servicebus/vnext_servicebus_2.png" />
+
+      # Azure function
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The Azure function called "CustomOrder" is configured as depicted in the image. 
+
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Azure_Function/vnext_azurefunction_config.png" />
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Following that, the UID is verified against the "order detail" collection in Cosmos to retrieve the corresponding data. 
+
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Azure_Function/vnext_azurefunction_1.png" />
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The data is transformed into JSON format, and then the PostOrderUsingSTAT_API method is invoked.  
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; In case the method call encounters a failure, it will undergo up to 10 retry attempts, with the following time intervals (in seconds):  
+
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Azure_Function/vnext_azurefunction_retrycount.png" />
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the method call still fails after the 10th attempt, a notification email will be sent to the configured email address with the following message: 
+
+      
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; “<i>Hi there</i>, 
+        
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>The Order# {trackingNumber} creation failed in STAT Portal, it exceeded max retry attempts</i>.
+        
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>Thanks</i>, 
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>STAT Team</i>” 
+
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If further retries are required after the initial 10 attempts, they will take place at intervals of 1800 seconds. 
+  
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Azure_Function/vnext_azurefunction_2.png" />
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The JSON data and the API key are supplied as parameters to the <b>PostOrdersUsingSTAT_API</b> method. Subsequently, the order is generated in the SQL database via the endpoint “api/orders”, and the outcome of the order placement, either success or failure, is returned. 
+        
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Azure_Function/vnext_azurefunction_3.png" />
+
+      # Push Order status history to Cosmos 
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The order's status undergoes changes as it progresses through various stages during shipment, starting from order submission until it is delivered. To maintain a comprehensive order history, a dedicated mechanism has been implemented to record and synchronize this history with Cosmos.   
+        
+        In this process, three new columns have been introduced in the order history table named TRK.OrderStatusHistory, which facilitate the synchronization of order statuses with a Service Bus and subsequently with Cosmos: 
+        
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>IsSyncCosmosUpdated:</b> This column indicates whether a record has been synchronized in Cosmos. The default value is set to False. 
+        
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>IsSyncCosmosUpdateEnabled:</b> This column serves as a condition that determines whether a record should be pushed to Cosmos.  
+        
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>IsPushCosmosUpdated:</b> This column signifies whether a record has been successfully pushed to Cosmos. The default value is set to False. 
+        
+        To achieve this synchronization, a timer function is employed to select updated records from the past 24 hours and evaluate with the following conditions: 
+        
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If IsSyncCosmosUpdated is set to False, IsSyncCosmosUpdateEnabled is True, and IsPushCosmosUpdated is False, the updated record will be pushed to Cosmos.  
+        
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; When IsSyncCosmosUpdateEnabled is set to False, no push operation will take place.  
+        
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Once a record is successfully pushed to Cosmos, IsPushCosmosUpdated will be set to True, confirming the successful push.  
+        
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; When the record is successfully created in Cosmos, IsSyncCosmosUpdated will be set to True.  
+        
+        Upon the completion of this process, the status of the three columns will be as follows:
+        
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; IsSyncCosmosUpdated: True 
+        
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; IsSyncCosmosUpdateEnabled: True  
+        
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; IsPushCosmosUpdated: True 
+x-tagGroups:
+  - name: General
+    tags:
+      - vNEXT
+
+paths:
+  /api/V2/Createorder:
+    post:
+      tags:
+        - vNEXT
+      summary: Create an Order
+      operationId: Orders_CreateOrder
+      description: This API endpoint facilitates the creation of a customer's order by capturing essential information such as quantities, prices, and location details. 
+      parameters:
+        - in: body
+          name: orderDto
+          required: true
+          schema:
+            $ref: '#/components/schemas/CreateOrderInDto'
+      responses:
+        "200":
+          description: OK successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateOrderOutDto'
+        "400":
+          description: |
+            BadRequest: 
+            <ul>
+              <li>Customer not located or authenticated.</li>
+              <li>Either this order\'s collection or delivery AddressLine1 is not available.</li>
+              <li>Either this order\'s collection or delivery City code is not available.</li>
+              <li>Either this order\'s collection or delivery State is not available.</li>
+              <li>Either this order\'s collection or delivery zip code is not available.</li>
+              <li>Either this order\'s delivery zip code is not serviceable at all or it cannot be serviced from your local service area. Please contact STAT customer service if you believe this to be inaccurate. We apologize for the inconvenience.</li>
+              <li>Invalid  Shipping Label Size</li>
+              <li>ModelState is Not Valid</li>
+              <li>Not authorized.</li>
+              <li>Order Could not Save Correctly, please check object Body</li>
+              <li>orders with adult signature required to be direct</li>
+              <li>Selected price set not available at this time. Use api/PriceSets to get current list of available customer price sets.</li>
+            </ul>
+      requestBody:
+        name: customerDto
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderInDto'
+        description: Order request body schema description.
+        required: true 
+  /api/v2/orderdetails:
+    get:
+      tags:
+        - vNEXT
+      summary: Order Tracking
+      operationId: Orders_Getorderdetails
+      description: This API endpoint facilitates the retrieval of shipment order status information.  
+      parameters:
+        - in: path
+          name: id
+          description: The ID generated by the STAT system passes the tracking number which acts as a unique identifier to track the package in real-time during the shipment.
+          required: true
+          schema:
+            type: string
+          example: T23023232327  
+      responses:
+        "200":
+          description: OK successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderdetailsOutDto'
+        "400":
+          description: |
+            BadRequest: 
+            <ul>
+              <li>Tracking Number Not Provided</li>
+              <li>Public Key Not Provided</li>
+              <li>Invalid tracking number</li>
+              <li>Permission denied</li>
+              <li>Bad Request, Key Not Found</li>
+            </ul>
+  
+components:
+  schemas:
+    Collectionlocation:
+      type: object
+      required:
+        - AddressLine1
+        - AddressLine2
+        - City
+        - CompanyName
+        - ContactName
+        - Country
+        - Email
+        - Phone
+        - PostalCode
+        - State
+      properties:
+        ContactName:
+          type: string
+          description: Name of the contact person of collection
+          minLength: 0
+          maxLength: 50
+        CompanyName:
+          type: string
+          description: Name of the company of the collection location 
+          minLength: 0
+          maxLength: 50
+        AddressLine1:
+          type: string
+          description: Line 1 of the collection location address.
+          minLength: 0
+          maxLength: 50
+        AddressLine2:
+          type: string
+          description: Line 2 of the collection location address. 
+          minLength: 0
+          maxLength: 50
+        City:
+          type: string
+          description: City of the collection location
+          minLength: 0
+          maxLength: 50
+        State:
+          type: string
+          description: State of the collection location  
+          minLength: 0
+          maxLength: 50
+        PostalCode:
+          type: string
+          description: Postal code of the collection and delivery location
+          minLength: 0
+          maxLength: 50
+        Country:
+          type: string
+          description: Country of the collection location
+          minLength: 0
+          maxLength: 50
+        Comments:
+          type: string
+          description: Free text field to input the additional information 
+          minLength: 0
+          maxLength: 512
+        Email:
+          type: string
+          description: Email address of the contact person    
+          minLength: 0
+          maxLength: 512
+        Phone:
+          type: string
+          description: Phone number of the contact person in collection  
+          minLength: 
+          maxLength: 50
+        LatitudeLongitude:
+          type: string
+          description: Lat & Long coordinates to collect the package
+          minLength: 0
+          maxLength: 100
+      example:
+        ContactName : "Demo Collection-11" 
+        CompanyName : "Collection Company-11" 
+        AddressLine1 : "2334 Cedar Crest Blvd" 
+        AddressLine2 : "None" 
+        City : "Dallas" 
+        State : "TX" 
+        PostalCode : "75203" 
+        Country : "United States" 
+        Comments : null 
+        Email : "pharma@yopmail.com" 
+        Phone : "9517538640" 
+        LatitudeLongitude : "32.7334,-96.79282" 
+      xml:
+        name: Collectionlocation
+    Deliverylocation:
+      type: object
+      required:
+        - AddressLine1
+        - AddressLine2
+        - City
+        - CompanyName
+        - ContactName
+        - Country
+        - Email
+        - Phone
+        - PostalCode
+        - State
+      properties:
+        ContactName:
+          type: string
+          description: Name of the contact person of delivery location
+          minLength: 0
+          maxLength: 50
+        CompanyName:
+          type: string
+          description: Name of the company of the delivery location 
+          minLength: 0
+          maxLength: 50
+        AddressLine1:
+          type: string
+          description: Line 1 of the collection & delivery location address.
+          minLength: 0
+          maxLength: 50
+        AddressLine2:
+          type: string
+          description: Line 2 of the delivery location address.    
+          minLength: 0
+          maxLength: 50
+        City:
+          type: string
+          description: City of the delivery location 
+          minLength: 0
+          maxLength: 50
+        State:
+          type: string
+          description: State of the delivery location    
+          minLength: 0
+          maxLength: 50
+        PostalCode:
+          type: string
+          description: Postal code of the delivery location 
+          minLength: 0
+          maxLength: 50
+        Country:
+          type: string
+          description: Country of the delivery location
+          minLength: 0
+          maxLength: 50
+        Comments:
+          type: string
+          description: Free text field to input the additional information 
+          minLength: 0
+          maxLength: 512
+        Email:
+          type: string
+          description: Email address of the contact person  
+          minLength: 0
+          maxLength: 512
+        Phone:
+          type: string
+          description: Phone number of the contact person in delivery
+          minLength: 0
+          maxLength: 50
+        LatitudeLongitude:
+          type: string
+          description: Lat & Long coordinates to deliver the package 
+          minLength: 0
+          maxLength: 100
+      example:
+        Zone : null 
+        ID : "8c7630b9-5a2c-4c1e-8eb5-88b864ca1a37" 
+        ContactName : "Texaco Austin schedule-10" 
+        CompanyName : "Texaco Austin schedule-10" 
+        AddressLine1 : "6018 Atwood St" 
+        AddressLine2 : "-" 
+        City : "Austin" 
+        State : "TX" 
+        PostalCode : "78741" 
+        Country : "United States" 
+        Comments : "test" 
+        Email : "uzumaki@yopmail.com" 
+        Phone : "75315945610" 
+        Category : null 
+        LatitudeLongitude : null 
+      xml:
+        name: Deliverylocation
+
+    CreateOrderInDto:
+      type: object
+      required:
+        - PriceSet
+        - Collectionlocation
+        - Deliverylocation
+      properties:
+        Refrigerated:
+          type: boolean
+          description: This tells whether the product is refrigerated before or during the shipment.  
+            The possible values are “true/false”. True represents that the product is refrigerated and false demotes it is not refrigerated  
+        TrackingNumber:
+          type: string
+          description: The tracking number acts as a unique identifier to track the package in real time during the shipment.
+          minLength: 0
+          maxLength: 50      
+        ShippinglabelSize:
+          type: string
+          description: Represents the size of the shipping label
+          minLength: 0
+          maxLength: 50     
+        Format:
+          type: string
+          description: The format in which the file should be downloaded. 
+          minLength: 0
+          maxLength: 50         
+        RequestedBy:
+          type: string
+          description: The individual who requested the order 
+          minLength: 0
+          maxLength: 50
+        Description:
+          type: string
+          description: This is a free text field where the special instructions about the product, shipment are added
+          minLength: 0
+          maxLength: 2000  
+        Comments:
+          type: string
+          description: This is a free text field where the special instructions about the product, shipment are added
+          minLength: 0
+          maxLength: 2000  
+        CollectionContactName  :
+          type: string
+          description: Name of the person from whom the package should be collected
+          minLength: 0
+          maxLength: 50     
+        CollectionCODRequired :
+          type: boolean
+          description: This indicates whether collection COD is required  
+            The potential values are "Yes/No," where "Yes" signifies that the COD is required, and "No" signifies that it is not required.  
+        CODAmount:
+          type: number
+          format: double
+          description: The amount to be collected during the time of delivery 
+        CollectionSignatureRequired:
+          type: boolean
+          description: This indicates whether obtaining a signature from the recipient is necessary after package collection.  
+            The potential values are "Yes/No," where "Yes" signifies that the signature is required, and "No" signifies that it is not required.  
+        Weight:
+          type: number
+          format: double
+          description: Weight of the package 
+        Quantity:
+          type: integer
+          format: int32
+          description: Order quantity 
+        PriceSet:
+          type: string
+          description: Priceset of the package 
+          minLength: 0
+          maxLength: 50
+        DeclaredValue:
+          type: number
+          format: double
+          description: The amount value declared for the order  
+        DeliverySignatureRequired:
+          type: boolean
+          description: Indicates whether a signature is necessary from the recipient upon package delivery.  
+            The potential values are "Yes/No," where "Yes" signifies that the signature is required, and "No" signifies that it is not required. 
+        SignatureType :
+          type: string
+          description: This denotes whether the signature should be received from the desired contact.   
+            The possible values are “Direct/Indirect” where “Direct” signifies that the signature needs to be received from the desired person and “Indirect” signifies that it is not needed to be collected from the desired person
+          minLength: 0
+          maxLength: 50   
+        IsAdultSignature  :
+          type: boolean
+          description: Denotes the signature is received from an adult.    
+            The possible values are “Yes/No” where “Yes” signifies that the signature was received from an adult person and “No” signifies that it is not an adult signature  
+        DeliveryCODRequired :
+          type: boolean
+          description: 'To determine if DeliveryCOD is necessary or not. The options are <yes/no>.   
+            Example: When "Yes" is selected, Delivery COD is mandatory, while "No" indicates it is not required.'   
+        SuppressUserNotification :
+          type: boolean
+          description: This allows to prevent or disable notifications intended for a user.   
+            The potential values are "Yes/No," where "Yes" signifies that the notifications should not be sent, and "No" signifies that notification has to be sent.
+        PurchaseOrderNumber :
+          type: string
+          description: PurchaseOrderNumber serves as a unique identifier to track the purchase order.
+          minLength: 0
+          maxLength: 50
+        ReferenceNumber :
+          type: string
+          description: ReferenceNumber serves as a unique identifier to track the purchase order. 
+          minLength: 0
+          maxLength: 50  
+        ShortCodeOptIn :
+          type: boolean
+          description: It signifies whether a shortcodeoptin is required or not.  
+            The potential values are "Yes/No," where "Yes" signifies that the shortcodeoptin is required, and "No" signifies that it is not required. 
+        CollectionLocation:
+          $ref: '#/components/schemas/Collectionlocation'
+        DeliveryLocation:
+          $ref: '#/components/schemas/Deliverylocation'
+      example:
+        Refrigerated: false
+        TrackingNumber: ''
+        ShippingLabelSize: 4x8
+        Format: pdf
+        RequestedBy:
+        Description: 'Fragile Handle with care: Glass material'
+        Comments: Inflammable
+        CollectionContactName:
+        CollectionCODRequired: false
+        CODAmount: 20
+        CollectionSignatureRequired: false
+        Weight: 200
+        Quantity: 1
+        PriceSet: b6ec8de4-852a-445f-8f3e-c56b8b396111
+        DeclaredValue: 129
+        DeliverySignatureRequired: true
+        SignatureType: direct
+        IsAdultSignature: true
+        DeliveryCODRequired: false
+        SuppressUserNotification: false
+        PurchaseOrderNumber: '55555'
+        ReferenceNumber:
+        ShortCodeOptIn: false
+        CollectionLocation:
+          ContactName: Johnsons-6
+          CompanyName: Johnsons-6
+          AddressLine1: 2334 Cedar Crest Blvd
+          AddressLine2: ''
+          City: Dallas
+          State: TX
+          PostalCode: '75203'
+          Country: United States
+          Comments:
+          Email: pharma@yopmail.com
+          Phone: '3333344445'
+          LatitudeLongitude:
+        DeliveryLocation:
+          ContactName: Tom Holland-525
+          CompanyName: Medicare-525
+          AddressLine1: 10311 Joaquin Dr
+          AddressLine2: ''
+          City: Dallas
+          State: TX
+          PostalCode: '75229'
+          Country: United States
+          Comments:
+          Email: uzumaki@yopmail.com
+          Phone: "+914444444446"
+          LatitudeLongitude:
+      xml:
+        name: CreateOrderInDto   
+    CreateOrderOutDto:
+      type: object
+      properties:
+        UID:
+          type: string
+          description: The ID generated by the STAT system acts as a unique identifier for an order
+          minLength: 0
+          maxLength: 50
+        TrackingNumber :
+          type: string
+          description: The tracking number acts as a unique identifier to track the package in real-time during the shipment.
+          minLength: 0
+          maxLength: 50
+        CollectionLocation:
+          $ref: '#/components/schemas/CollectionLocation'
+        DeliveryLocation:
+          $ref: '#/components/schemas/DeliveryLocation'
+        Refrigerated :
+          type: boolean
+          description: This indicates whether the product is refrigerated prior to or during shipment.  
+            The potential values are "Yes/No," where "Yes" signifies that the product is refrigerated, and "No" signifies that it is not refrigerated.  
+        Description :
+          type: string
+          description: This is a free text field where the special instructions about the product, shipment are added 
+          minLength: 0
+          maxLength: 2000  
+        Comments :
+          type: string
+          description: This is a free text field where the special instructions about the product, shipment are added
+          minLength: 0
+          maxLength: 2000    
+        CollectionSignatureRequired :
+          type: boolean
+          description: This indicates whether obtaining a signature from the recipient is necessary after package collection.  
+            The potential values are "Yes/No," where "Yes" signifies that the signature is required, and "No" signifies that it is not required.  
+        DeliverySignatureRequired :
+          type: boolean
+          description: Indicates whether a signature is necessary from the recipient upon package delivery.  
+            The potential values are "Yes/No," where "Yes" signifies that the signature is required, and "No" signifies that it is not required.  
+        SuppressUserNotification :
+          type: boolean
+          description: This allows to prevent or disable notifications intended for a user.  
+            The potential values are "Yes/No," where "Yes" signifies that the notifications should not be sent, and "No" signifies that notification has to be sent.    
+      example:
+        UID: 7e30f2b8-b356-4a02-948c-4b7ebb166785
+        TrackingNumber: ''
+        CollectionLocation:
+          ContactName: Johnsons-6
+          CompanyName: Johnsons-6
+          AddressLine1: 2334 Cedar Crest Blvd
+          AddressLine2: ''
+          City: Dallas
+          State: TX
+          PostalCode: '75203'
+          Country: United States
+          Comments:
+          Email: pharma@yopmail.com
+          Phone: '3333344445'
+        DeliveryLocation:
+          ContactName: Tom Holland-525
+          CompanyName: Medicare-525
+          AddressLine1: 10311 Joaquin Dr
+          AddressLine2: ''
+          City: Dallas
+          State: TX
+          PostalCode: '75229'
+          Country: United States
+          Comments:
+          Email: uzumaki@yopmail.com
+          Phone: "+914444444446"
+        Refrigerated: false
+        Description: 'Fragile Handle with care: Glass material'
+        Comments: Inflammable
+        CollectionSignatureRequired: false
+        DeliverySignatureRequired: true
+        SuppressUserNotification: false
+      xml:
+        name: CreateOrderOutDto  
+    OrderdetailsOutDto:
+      type: object
+      properties:
+        RegionCode:
+          type: string
+          description: The code that is designated for the region
+          minLength: 0
+          maxLength: 50
+        error:
+          type: string
+          description: An error had occurred while processing the request. Kindly contact STAT support to know further details   
+          minLength: 0
+          maxLength: 2000
+        ID:
+          type: string
+          description: Unique id generated by the STAT system. This is used as identifier
+          minLength: 0
+          maxLength: 50
+        TrackingNumber:
+          type: string
+          description: The tracking number acts as a unique identifier to track the package in real-time during the shipment. 
+          minLength: 0
+          maxLength: 50
+        TrackingURL:
+          type: string
+          description: Helps to track and get the status of the movement of the package order. 
+          minLength: 0
+          maxLength: 2000
+        BarcodeURL:
+          type: string
+          description: The BarcodeURL helps to check the status of the ordered product.  
+          minLength: 0
+          maxLength: 2000
+        ShippingLabel:
+          type: string
+          description: The label affixed on the package gives comprehensive information regarding the shipment.
+          minLength: 0
+          maxLength: 2000
+        VpodDownload:
+          type: string
+          description: 
+          minLength: 0
+          maxLength: 2000
+        SignatureURL:
+          type: string
+          description: The system generates a URL to get the digital signature from the individual  
+          minLength: 0
+          maxLength: 2000 
+        Refrigerated:
+          type: boolean
+          description: This tells whether the product is refrigerated before or during the shipment.  
+            The possible values are “Yes/No”. True represents that the product is refrigerated and false demotes it is not refrigerated  
+        StatusUpdates:
+          $ref: '#/components/schemas/OrderStatusDto'
+        DeliveryContactName:
+          type: string
+          description: Name of the individual to contact during the delivery 
+          minLength: 0
+          maxLength: 50
+        StatusCode:
+          type: integer
+          format: int32
+          description: Status code of the order package 
+        CustomerAccount:
+          type: string
+          description: Account number of the customer
+          minLength: 0
+          maxLength: 50
+        Description:
+          type: string
+          description: It is a free text field where the special instructions about the product, shipment can be added 
+          minLength: 0
+          maxLength: 2000
+        Comments:
+          type: string
+          description: It’s a free text field to add comments  
+          minLength: 0
+          maxLength: 2000
+        Customer:
+          type: string
+          description: Name of the customer 
+          minLength: 0
+          maxLength: 50  
+        PriceSet:
+          type: string
+          description: Priceset of the package   
+          minLength: 0
+          maxLength: 50 
+        CollectionArrivalWindow:
+          $ref: '#/components/schemas/CollectionArrivalWindow'
+        DeliveryArrivalWindow:
+          $ref: '#/components/schemas/DeliveryArrivalWindow'
+        CollectionSignatureRequired:
+          type: boolean
+          description: This indicates whether obtaining a signature from the recipient is necessary after package collection. 
+            The potential values are "Yes/No," where "Yes" signifies that the signature is required, and "No" signifies that it is not required. 
+        DeliverySignatureRequired:
+          type: boolean
+          description: Indicates whether a signature is necessary from the recipient upon package delivery. 
+            The potential values are "Yes/No," where "Yes" signifies that the signature is required, and "No" signifies that it is not required. 
+        SuppressUserNotification:
+          type: boolean
+          description: This allows to prevent or disable notifications intended for a user. 
+            The potential values are "Yes/No," where "Yes" signifies that the notifications should not be sent, and "No" signifies that notification has to to be sent.  
+        CollectionLocation:
+          $ref: '#/components/schemas/Collectionlocation'
+        DeliveryLocation:
+          $ref: '#/components/schemas/Deliverylocation'
+        TotalCost:
+          type: number
+          format: double
+          description: Total cost of the order 
+        DeclaredValue:
+          type: number
+          format: double
+          description: The amount value declared for the order 
+        DriverInstruction:
+          type: string
+          description: A text field that allows for the inclusion of instructions to provide to drivers.  
+          minLength: 0
+          maxLength: 200 
+      example:
+        RegionCode: AUS
+        error:
+        ID: ae6e3698-812a-4c6d-84c0-fe5f8d303205
+        TrackingNumber: '10358950'
+        TrackingURL: https://sampleurl.com/MyOrder/?id=8i569mGbnUSlsErmjSOSNQ
+        BarcodeURL: https://sampleurl.net/OrdersManagement/Orders/OrderShippingLabel?orderId=ae6e3698-812a-4c6d-84c0-fe5f8d303205&customerId=57ecc72b-906e-4eb8-ae2a-62e53c9ec5e5
+        ShippingLabel: https://sampleurl.com/api/DownloadLabel?TrackingNumber=10358950&Type=ShippingLabel&CustomerId=57ecc72b-906e-4eb8-ae2a-62e53c9ec5e5
+        VpodDownload: https://sampleurl.com/api/orders/vpoddownload?trackingNumber=10358950
+        SignatureURL:
+        Refrigerated: false
+        StatusUpdates:
+        - Date: '2023-09-29T08:15:08.7733333'
+          Description: Delivered
+          Exception: false
+          ExceptionCode: 0
+          LocalTime: '2023-09-29T03:15:08.7733333'
+          Region: Austin
+        - Date: '2023-09-29T08:14:42.0133333'
+          Description: On vehicle for delivery
+          Exception: false
+          ExceptionCode: 0
+          LocalTime: '2023-09-29T03:14:42.0133333'
+          Region: Austin
+        - Date: '2023-09-29T08:14:23.7133333'
+          Description: Arrived at AUSTIN sort facility
+          Exception: false
+          ExceptionCode: 0
+          LocalTime: '2023-09-29T03:14:23.7133333'
+          Region: Austin
+        - Date: '2023-09-29T08:13:59.52'
+          Description: Outbound shuttle transfer
+          Exception: false
+          ExceptionCode: 0
+          LocalTime: '2023-09-29T03:13:59.52'
+          Region: Dallas
+        - Date: '2023-09-29T08:13:48.1'
+          Description: Arrived at DALLAS sort facility
+          Exception: false
+          ExceptionCode: 0
+          LocalTime: '2023-09-29T03:13:48.1'
+          Region: Dallas
+        - Date: '2023-09-29T08:13:38.1'
+          Description: Delivery date changed
+          Exception: false
+          ExceptionCode: 0
+          LocalTime: '2023-09-29T03:13:38.1'
+          Region: Dallas
+        - Date: '2023-09-29T08:13:34.9566667'
+          Description: Picked up
+          Exception: false
+          ExceptionCode: 0
+          LocalTime: '2023-09-29T03:13:34.9566667'
+          Region: Dallas
+        - Date: '2023-09-29T08:13:05.9466667'
+          Description: Order information received
+          Exception: false
+          ExceptionCode: 0
+          LocalTime: '2023-09-29T03:13:05.9466667'
+          Region: Dallas
+        DeliveryContactName: ''
+        StatusCode: 3
+        CustomerAccount: '911834035'
+        Description: Ordered From STG API
+        Comments:
+        Customer: 57ecc72b-906e-4eb8-ae2a-62e53c9ec5e5
+        PriceSet: b6ec8de4-852a-445f-8f3e-c56b8b396111
+        CollectionArrivalWindow:
+          EarliestTime: '2023-09-29T08:13:03.057'
+          LatestTime: '2023-09-30T02:00:00'
+        DeliveryArrivalWindow:
+          EarliestTime: '2023-09-29T10:00:00'
+          LatestTime: '2023-09-29T18:00:00'
+        CollectionSignatureRequired: true
+        DeliverySignatureRequired: true
+        SuppressUserNotification: false
+        CollectionLocation:
+          Zone:
+          ID: 83f3fbcc-905f-4ffd-a96d-0abd836cee64
+          ContactName: Demo Collection-11
+          CompanyName: Collection Company-11
+          AddressLine1: 2334 Cedar Crest Blvd
+          AddressLine2: None
+          City: Dallas
+          State: TX
+          PostalCode: '75203'
+          Country: United States
+          Comments:
+          Email: pharma@yopmail.com
+          Phone: '9517538640'
+          Category:
+          LatitudeLongitude: 32.7334,-96.79282
+        DeliveryLocation:
+          Zone:
+          ID: 8c7630b9-5a2c-4c1e-8eb5-88b864ca1a37
+          ContactName: Texaco Austin schedule-10
+          CompanyName: Texaco Austin schedule-10
+          AddressLine1: 6018 Atwood St
+          AddressLine2: "-"
+          City: Austin
+          State: TX
+          PostalCode: '78741'
+          Country: United States
+          Comments: test
+          Email: uzumaki@yopmail.com
+          Phone: '75315945610'
+          Category:
+          LatitudeLongitude:
+        DeclaredValue: 10
+        TotalCost: 11
+        DriverInstruction:
+      xml:
+        name: OrderdetailsOutDto 
