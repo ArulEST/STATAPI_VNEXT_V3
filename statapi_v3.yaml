@@ -103,33 +103,16 @@ tags:
         <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/vnext_mastersync_2_2.png" />
 
       # Webhook 
-        <b>To set up a webhook in the STAT portal, follow these steps:</b>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; To set up a webhook in the STAT portal, Login to STAT portal -> Main menu -> User Management -> Manage Customer -> View -> click Create Webhook button and provide the required details as given in the image. 
 
-        Navigate to the main menu on the STAT portal at
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/Webhook/createwebhook_ui.png" />
 
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; https://statqastage.azurewebsites.net
-        
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; From the main menu, select "Manage Customer" under user management.  
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Once the details are submitted, they will be securely stored in the table trk.WebhookNotification. 
 
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Next to each client, click on "View" to access their details.  
-
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Within the client's details, locate and click the "Create Webhook" button. 
-
-        In the provided form, do the following:  
-
-        <ul>
-          <li>Choose the required order status value.</li>
-          <li>Enter the Webhook URL.</li>
-          <li>Add any necessary Webhook parameters.</li>
-          <li>Note that Authentication is optional. If selected, provide both the key and value data.</li>
-        </ul>   
-        
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Once the details are submitted, whether with or without parameters, they will be securely stored in the table trk.WebhookNotification. 
-        
-        <b>OTServer:</b> 
+        <b>OTServer</b> 
         <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OTServer/vnext_otserver_1.png" />
         
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; In the OTServer, the QueueManager class periodically checks the status of QueueManagerCustomerWebhook every 10 seconds. If the status is false, the ProcessWebHookNotifications method is executed.  
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; In the OTServer, the QueueManager class periodically checks the status of QueueManagerCustomerWebhook every 10 seconds. If the status is false, the ProcessWebHookNotifications method is executed itself.  
       
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Records from the trk.WebhookNotification table are selected based on the following conditions:
         <ul>
@@ -149,8 +132,7 @@ tags:
             <li>Service Unavailable</li>
             <li>Not Found </li>
             <li>An attempt was made to access a socket in a way forbidden by its access permissions.  </li>
-            <li>NULL</li>
-            <li>No such host is known. (m3msuo66nk.execute-api.us-west-2.amazonaws.com:443)  </li>
+            <li>No such host is known.</li>
           </ul>
         </ul> 
 
@@ -280,11 +262,9 @@ tags:
         
         The temporarily created order records in Cosmos are subsequently transferred to SQL based on the conditions and steps outlined below:  
         
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Retrieve the response from CosmosOrder function.   
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Within the Service Bus, the CosmosOrder object reference is deserialized to extract the requestId. This requestId is then forwarded to the CreateOrderInSql method.   
         
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Within the Service Bus, the CosmosOrder method is deserialized to extract the requestId. This requestId is then forwarded to the CreateOrderInSql method.   
-        
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The CreateOrderInSql method retrieves the order collection details from the OrderDetails table in Cosmos. It verifies if the requestId exists for the retrieved orders. The order records associated with the requestId are then processed. If Order.OrderInDto.IsSyncCosmosOrder is set to True, the records are fetched from Cosmos and stored in SQL. 
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The CreateOrderInSql method retrieves the order collection details from the OrderDetails table in Cosmos. It verifies if the requestId exists for the retrieved orders. The order records associated with the requestId are then processed. The Order.OrderInDto.IsSyncCosmosOrder is set to True, the records are fetched from Cosmos and stored in SQL.    
         
         <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Cosmostosql/Cosmostosql_2.png" />    
         
@@ -307,7 +287,7 @@ x-tagGroups:
       - Order Creation
 
 paths:
-  /api/V2/Createorder:
+  /api/V2/orders:
     post:
       tags:
         - Order Creation
