@@ -110,7 +110,7 @@ tags:
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Once the details are submitted, they will be securely stored in the table trk.WebhookNotification. 
 
         <b>OTServer</b> 
-        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OTServer/vnext_otserver_1.png" />
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/Webhook/OTServer/vnext_otserver_1.png" />
         
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; In the OTServer, the QueueManager class periodically checks the status of QueueManagerCustomerWebhook every 10 seconds. If the status is false, the ProcessWebHookNotifications method is executed itself.  
       
@@ -121,7 +121,7 @@ tags:
           <li>The Status should not be equal to "Success."</li>
         </ul>   
 
-        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OTServer/vnext_otserver_2.png" />
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/Webhook/OTServer/vnext_otserver_2.png" />
        
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The trk.WebhookNotification.WebhookUrl and trk.WebhookNotification.WebhookParams of the retrieved records are sent to an HTTPS POST request. The resulting response status and messages are recorded in the trk.WebhookNotification.Status and trk.WebhookNotification.Message columns within the trk.WebhookNotification table.  
         
@@ -137,11 +137,11 @@ tags:
         </ul> 
 
         <b>Service Bus:</b>  
-        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/ServiceBus/vnext_servicebus_1.png" />
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/Webhook/ServiceBus/vnext_servicebus_1.png" />
         
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; In the Service Bus, the customerwebhooknotification method is deserialized to obtain the WebhooknotificationId, which is then passed to the ProcessCustomerWebhookNotification method.   
       
-        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/ServiceBus/vnext_servicebus_2.png" />
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/Webhook/ServiceBus/vnext_servicebus_2.png" />
       
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; In the SystemFeatureFlags table, a check is performed to ensure that the column ProcessName is equal to "ProcessName.QueueManagerCustomerWebhook," and the IsServiceBusEnable column is set to true. If this condition is met, the parameter value WebhooknotificationId is checked for its existence in the WebhookNotifications table.  
         
