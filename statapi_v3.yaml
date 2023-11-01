@@ -52,55 +52,279 @@ tags:
       
         <h2>Master data that exists in Cosmos:</h2>
           <ul>
-            <li>API key</li>
-            <li>ZipCodes</li>
+            <li>Customer</li>
+            <li>Price</li>
+            <li>RegionRouteZipCode</li>
+            <li>Settings</li>
           </ul>
 
       # Master Sync
-        <h2>Automatic</h2>
+        ## Automatic
 
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; There are two Azure functions employed to synchronize master data from SQL to Cosmos DB, scheduled to run daily at 2 AM. 
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; There are two Azure functions employed to synchronize master data from SQL to Cosmos DB, scheduled to run daily at 2 AM. 
 
         <ul>
-          <li>SyncCustomerValues</li>
-          <li>SyncZipCode</li>
+          <li>SyncCustomerAPIKey</li>
+          <li>SyncPriceCosmos</li>
+          <li>SyncPriceModifierCosmos</li>
+          <li>SyncPriceSetClassCosmos</li>
+          <li>SyncRegionCosmos</li>
+          <li>SyncRouteCosmos</li>
+          <li>SyncZipCosmos</li>
+          <li>SyncOrderStatusValueCosmos</li>
+          <li>SyncSubmissionSourceCosmos</li>
+          <li>SyncSettingsCosmos</li>
+          <li>SyncHolidayCosmos</li>
         </ul>
 
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; In the automatic mode, if any modifications occur in the customer API key outside of application, <b>SyncCustomerValues</b> function automatically detects these changes and transmits the updated information to the Azure service bus for customer data synchronization in Cosmos.  
+        <h2>Customer</h2>
 
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If no changes are detected, the system sends the existing data for synchronization. This process occurs daily at 2 AM. 
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; In the automatic mode, if any modifications occur in the customer API key outside of application, <b>SyncCustomerAPIKey</b> function automatically detects these changes and transmits the updated information to the Azure service bus for customer data synchronization in Cosmos.  
 
-        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/vnext_mastersync_1.png" />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If no changes are detected, the system sends the existing data for synchronization. This process occurs daily at 2 AM.   
 
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If any modifications occur in the Zip code, <b>SyncZipCode</b> function automatically detects these changes and transmits the updated information to the Azure service bus for customer data synchronization in Cosmos.   
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Automatic/oc_mastersync_auto_customer.png" />
 
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If no changes are detected, the system sends the existing data for synchronization. This process occurs daily at 2 AM. 
+        <h2>Price</h2>
 
-        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/vnext_mastersync_2.png" />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; In the automatic mode, if any modifications occur in the price outside of application, <b>SyncPriceCosmos</b> function automatically detects these changes and transmits the updated information to the Azure service bus for price data synchronization in Cosmos.  
 
-        <h2>Manual</h2> 
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If no changes are detected, the system sends the existing data for synchronization. This process occurs daily at 2 AM.   
 
-        <h3>ZipCode Sync Cosmos</h3>
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Automatic/oc_mastersync_auto_price.png" />
 
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the zip code is modified via the STAT app portal, the “<b>ZipCodeSyncCosmos</b>” function will trigger a request to the Azure service bus instantly to synchronize the updated zip code information with Cosmos DB. 
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; In the automatic mode, if any modifications occur in the price modifier outside of application, <b>SyncPriceModifierCosmos</b> function automatically detects these changes and transmits the updated information to the Azure service bus for price modifier data synchronization in Cosmos.  
 
-        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/vnext_mastersync_3.png" />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If no changes are detected, the system sends the existing data for synchronization. This process occurs daily at 2 AM.   
 
-        <h3>Customer Sync Cosmos</h3>
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Automatic/oc_mastersync_auto_pricemodifier.png" />
 
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the customer API key is modified via the STAT app portal, the “<b>CustomerSyncCosmos</b>” function will trigger a request to the Azure service bus instantly to synchronize the updated zip code information with Cosmos DB. 
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; In the automatic mode, if any modifications occur in the price set outside of application, <b>SyncPriceSetClassCosmos</b> function automatically detects these changes and transmits the updated information to the Azure service bus for price set data synchronization in Cosmos.  
 
-        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/vnext_mastersync_4.png" />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If no changes are detected, the system sends the existing data for synchronization. This process occurs daily at 2 AM.   
+
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Automatic/oc_mastersync_auto_priceset.png" />
+
+        <h2>RegionRouteZipCode</h2>
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; In the automatic mode, if any modifications occur in the region outside of application, <b>SyncRegionCosmos</b> function automatically detects these changes and transmits the updated information to the Azure service bus for region data synchronization in Cosmos.  
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If no changes are detected, the system sends the existing data for synchronization. This process occurs daily at 2 AM.   
+
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Automatic/oc_mastersync_auto_region.png" />
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; In the automatic mode, if any modifications occur in the delivery route outside of application, <b>SyncRouteCosmos</b> function automatically detects these changes and transmits the updated information to the Azure service bus for delivery route data synchronization in Cosmos.  
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If no changes are detected, the system sends the existing data for synchronization. This process occurs daily at 2 AM.   
+
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Automatic/oc_mastersync_auto_route.png" />
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; In the automatic mode, if any modifications occur in the zip code outside of application, <b>SyncZipCosmos</b> function automatically detects these changes and transmits the updated information to the Azure service bus for zip code data synchronization in Cosmos.  
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If no changes are detected, the system sends the existing data for synchronization. This process occurs daily at 2 AM.   
+
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Automatic/oc_mastersync_auto_zipcode.png" />
+
+        <h2>Settings</h2>
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; In the automatic mode, if any modifications occur in the order status outside of application, <b>SyncOrderStatusValueCosmos</b> function automatically detects these changes and transmits the updated information to the Azure service bus for order status data synchronization in Cosmos.  
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If no changes are detected, the system sends the existing data for synchronization. This process occurs daily at 2 AM.   
+
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Automatic/oc_mastersync_auto_orderstatus.png" />
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; In the automatic mode, if any modifications occur in the submission source outside of application, <b>SyncSubmissionSourceCosmos</b> function automatically detects these changes and transmits the updated information to the Azure service bus for submission source data synchronization in Cosmos.  
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If no changes are detected, the system sends the existing data for synchronization. This process occurs daily at 2 AM.   
+
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Automatic/oc_mastersync_auto_submission.png.png" />
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; In the automatic mode, if any modifications occur in the settings outside of application, <b>SyncSettingsCosmos</b> function automatically detects these changes and transmits the updated information to the Azure service bus for settings data synchronization in Cosmos.  
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If no changes are detected, the system sends the existing data for synchronization. This process occurs daily at 2 AM.   
+
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Automatic/oc_mastersync_auto_setting.png" />
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; In the automatic mode, if any modifications occur in the holidays outside of application, <b>SyncHolidayCosmos</b> function automatically detects these changes and transmits the updated information to the Azure service bus for holidays data synchronization in Cosmos.  
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If no changes are detected, the system sends the existing data for synchronization. This process occurs daily at 2 AM.   
+
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Automatic/oc_mastersync_auto_holiday.png" />
+      
+        ## Manual
+        <b>Customer</b>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The request object is deserialized to extract the requestId. This requestId is then passed to the SyncCustomerDetailsCosmos method. 
+
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Manual/oc_mastersync_customer.png" />
         
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; With the help of customer's ID, customer's API key is checked and the newly received data will be applied as updates for that specific customer. 
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Retrieve the Customer collection from Cosmos, then locate the values in the list by confirming if the customer ID and request ID match. If the condition is satisfied, retrieve those entries and either insert or update them in db.Customers. 
+ 
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Manual/oc_mastersync_customer_1.png" />
+        
+        <b>Price</b>
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Manual/oc_mastersync_price.png" />
+        
+        The request object is deserialized to extract the request ID, and simultaneously, the request type is also extracted. Depending on the type value, the request ID is directed to the appropriate methods as follows: 
 
-        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/vnext_mastersync_1_1.png" />
-        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/vnext_mastersync_1_2.png" />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the type is "PriceSet," the request ID is forwarded to "SyncPriceDetailsCosmos."
 
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; With the help of customer's ID, the zip code is checked and the newly received data will be applied as updates for that specific customer.
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the type is "PriceModifier," the request ID is forwarded to "SyncPriceModifierCosmos." 
 
-        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/vnext_mastersync_2_1.png" />
-        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/vnext_mastersync_2_2.png" />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the type is "PriceSetClass," the request ID is forwarded to "SyncPriceSetClassCosmos." 
+      
+        <b>SyncPriceDetailsCosmos</b>
+
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Manual/oc_mastersync_price_pricedetails_1.png" />
+        
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Get the collection in cosmos , and find the value on the list  
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Get the record and insert/ update db.PriceSets  
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Retrieve the Price collection from Cosmos, then locate the values in the list by confirming if the customer ID and request ID match. If the condition is satisfied, retrieve those entries and either insert or update them in db.PriceSets. 
+
+        <b>SyncPriceModifierCosmos</b>
+
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Manual/oc_mastersync_price_pricemodifier_1.png" />
+        
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Get the collection in cosmos , and find the value on the list  
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Get the record and insert/ update db.PriceModifiers  
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Retrieve the Price collection from Cosmos, then locate the values in the list by confirming if the customer ID and request ID match. If the condition is satisfied, retrieve those entries and either insert or update them in db.PriceModifiers. 
+
+        <b>SyncPriceSetClassCosmos</b>
+
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Manual/oc_mastersync_price_priceset_1.png" />
+        
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Get the collection in cosmos , and find the value on the list  
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Get the record and insert/ update db.PriceSetClasses  
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Retrieve the Price collection from Cosmos, then locate the values in the list by confirming if the customer ID and request ID match. If the condition is satisfied, retrieve those entries and either insert or update them in db.PriceSetClasses. 
+
+        <b>RegionRouteZipCodeSync</b>
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Manual/oc_mastersync_route.png" />
+        
+        Request object Deserialize and get the request.Id 
+
+        request.Type based on pass the method 
+        
+        Types
+        
+        <ul>
+          <li>RegionandDepots</li>
+          <li>Route</li>
+          <li>ZipCode</li>
+        </ul>
+
+        Pass the request.Id in SyncRegionDetailsCosmos 
+
+        The request object is deserialized to extract the requestId, and simultaneously, the request type is also extracted. Depending on the type value, the request ID is directed to the appropriate methods as follows:
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the type is " RegionandDepots," the request ID is forwarded to " SyncRegionDetailsCosmos." 
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the type is " Route," the request ID is forwarded to " SyncRouteDetailsCosmos." 
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the type is " ZipCode," the request ID is forwarded to " SyncZipcodeDetailsCosmos." 
+        
+        <b>SyncRegionDetailsCosmos</b>
+
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Manual/oc_mastersync_route_region_1.png" />
+        
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Get the collection in cosmos , and find the value on the list  
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Get the record and insert/ update db.Regions  
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Retrieve the Price collection from Cosmos, then locate the values in the list by confirming if the customer ID and request ID match. If the condition is satisfied, retrieve those entries and either insert or update them in db.Regions. 
+
+        <b>SyncRouteDetailsCosmos</b>
+
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Manual/oc_mastersync_route_routedetails_1.png" />
+        
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Get the collection in cosmos , and find the value on the list  
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Get the record and insert/ update db.Routes  
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Retrieve the Price collection from Cosmos, then locate the values in the list by confirming if the customer ID and request ID match. If the condition is satisfied, retrieve those entries and either insert or update them in db.Routes. 
+
+        <b>SyncZipcodeDetailsCosmos</b>
+
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Manual/oc_mastersync_route_zipcode_1.png" />
+        
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Get the collection in cosmos , and find the value on the list  
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Get the record and insert/ update db.ZipCodes  
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Retrieve the Price collection from Cosmos, then locate the values in the list by confirming if the customer ID and request ID match. If the condition is satisfied, retrieve those entries and either insert or update them in db.ZipCodes. 
+
+
+        <b>Settings</b>
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Manual/oc_mastersync_mds.png" />
+        
+        Request object Deserialize and get the request.Id 
+
+        request.Type based on pass the method 
+        
+        Types
+        
+        <ul>
+          <li>OrderStatusValue</li>
+          <li>SubmissionSource</li>
+          <li>Settings</li>
+          <li>Holiday</li>
+        </ul>
+
+        Pass the request.Id in SyncOrderStatusValueDetailsCosmos 
+
+        The request object is deserialized to extract the requestId, and simultaneously, the request type is also extracted. Depending on the type value, the request ID is directed to the appropriate methods as follows:
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the type is " OrderStatusValue," the request ID is forwarded to " SyncOrderStatusValueDetailsCosmos." 
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the type is " SubmissionSource," the request ID is forwarded to " SyncSubmissionCosmos." 
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the type is " Settings," the request ID is forwarded to " SyncSystemSettingsCosmos." 
+        
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the type is " Holiday," the request ID is forwarded to " SyncHolidayCosmos." 
+        
+        <b>SyncOrderStatusValueDetailsCosmos</b>
+
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Manual/oc_mastersync_mds_orderstatus_1.png" />
+        
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Get the collection in cosmos , and find the value on the list  
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Get the record and insert/ update db.OrderStatusValues  
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Retrieve the Price collection from Cosmos, then locate the values in the list by confirming if the customer ID and request ID match. If the condition is satisfied, retrieve those entries and either insert or update them in db.OrderStatusValues. 
+
+        <b>SyncSubmissionCosmos</b>
+
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Manual/oc_mastersync_mds_submission_1.png" />
+        
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Get the collection in cosmos , and find the value on the list  
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Get the record and insert/ update db.SubmissionSources  
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Retrieve the Price collection from Cosmos, then locate the values in the list by confirming if the customer ID and request ID match. If the condition is satisfied, retrieve those entries and either insert or update them in db.SubmissionSources. 
+
+        <b>SyncSystemSettingsCosmos</b>
+
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Manual/oc_mastersync_mds_system_1.png" />
+        
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Get the collection in cosmos , and find the value on the list  
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Get the record and insert/ update db.vw_SystemSettingValues   
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Retrieve the Price collection from Cosmos, then locate the values in the list by confirming if the customer ID and request ID match. If the condition is satisfied, retrieve those entries and either insert or update them in db.vw_SystemSettingValues . 
+
+        <b>SyncHolidayCosmos</b>
+
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Manual/oc_mastersync_mds_holiday_1.png" />
+        
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Get the collection in cosmos , and find the value on the list  
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Get the record and insert/ update db.Holidays  
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Retrieve the Price collection from Cosmos, then locate the values in the list by confirming if the customer ID and request ID match. If the condition is satisfied, retrieve those entries and either insert or update them in db.Holidays. 
 
       # Webhook 
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; To set up a webhook in the STAT portal, Login to STAT portal -> Main menu -> User Management -> Manage Customer -> View -> click Create Webhook button and provide the required details as given in the image. 
@@ -152,59 +376,21 @@ tags:
       # Code Snippet
         ## Temporary  Order
 
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The order request header key is verified against the API key in Cosmos DB.  
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/oc.png" />
 
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the key is found in Cosmos DB, the isvalid status will be set to True. 
-
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the key is not found in Cosmos DB, the request header key is then checked against the ASP Net user table ID in the SQL DB. 
-
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the validation is successful, the isvalid status will be set to True. 
-
-
-
-        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/vnext_order_1.png" />
-
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the validation is unsuccessful, verify whether the Bearer token is present in the header and that the parameter is not empty.
-
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the Bearer token is absent, examine the header for parameters with the keys "type," "wise," and "scheduler." If any one of these parameters is present, set isvalid to true. 
-
-
-        
-        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/vnext_order_2.png" />
-
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; When an order is initiated from the STAT Portal, the CustomerId found in the header is employed to authenticate the endpoint request. 
-
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the customer ID is found in the SQL table, the isvalid status is set to true.  
-
-        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/vnext_order_3.png" />
-
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If none of the above-mentioned conditions are met, and if the endpoint is "api/OnTimeUpdates", isvalid will be set to true. For all other endpoints, isvalid will be false, and the response returned will be "<i>Api Key Not Valid</i>." 
-
-        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/vnext_order_4.png" />
-
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Verify the API key in Cosmos DB and confirm whether the retrieved key exists in the customer table. If it exists, associate it with the API key list; if not, raise an exception “<i>Something went wrong. Please contact STAT support</i>” 
-
-        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/vnext_order_5.png" />
-
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Validate the Create Order request values against the collection and delivery location details. 
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Validate the Create Order request values against the collection and delivery location details.
 
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; First, verify that the address Line 1, City, State, and Postal code are valid. If any of these details are invalid, send the respective exceptions. 
 
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Next, ensure that the "Deliverysignaturerequired" condition is true, the "isadultsignature" condition in the orderDTO is also true, and the signature type is not empty. All these conditions collectively indicate that the order is ready to be placed. 
 
-        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/vnext_order_6.png" />
-        
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Validate if the delivery zip code falls within the serviceable region and if there is a valid price set for the customer. 
 
-        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/vnext_order_7.png" />
-        
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If all the above conditions are met, "Create Order" values are stored in Cosmos DB. 
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If all the above conditions are met, "Create Order" values are stored in Cosmos DB.  
 
-        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/vnext_order_8.png" />
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Trigger an entry to the service bus “customorderprocess”  
 
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Trigger an entry to the service bus “<b>customorderprocess</b>” 
-
-        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/vnext_order_9.png" />
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Servicebus/oc_servicebus.png" />
 
         ## Service Bus
           
@@ -212,74 +398,41 @@ tags:
 
         <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Servicebus/vnext_servicebus_config.png" />
 
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The Cosmos DB temporary order record includes a UID, which is a unique identifier generated by STAT for each order. This UID is transmitted to the service bus. 
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The Cosmos DB temporary order record includes a UID, which is a unique identifier generated by STAT for each order. This UID is transmitted to the service bus.  
 
-        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Servicebus/vnext_servicebus_1.png" />
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Servicebus/oc_servicebus.png" />
 
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The order's UID is subsequently passed to the service bus for processing. 
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Serialise  4 element and sending as string msg The order's UID is subsequently passed to the service bus for processing. 
 
-        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Servicebus/vnext_servicebus_2.png" />
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Servicebus/oc_servicebus_1.png" />
 
         ## Azure function
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The Azure function called " CosmosOrder " is configured as depicted in the image. 
           
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The Azure function called "CustomOrder" is configured as depicted in the image. 
-
         <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Azure_Function/vnext_azurefunction_config.png" />
-
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Following that, the UID is verified against the "order detail" collection in Cosmos to retrieve the corresponding data. 
-
-        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Azure_Function/vnext_azurefunction_1.png" />
-
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The data is transformed into JSON format, and then the PostOrderUsingSTAT_API method is invoked.  
-
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; In case the method call encounters a failure, it will undergo up to 10 retry attempts, with the following time intervals (in seconds):  
-
-        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Azure_Function/vnext_azurefunction_retrycount.png" />
-
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the method call still fails after the 10th attempt, a notification email will be sent to the configured email address with the following message: 
-
-      
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; “<i>Hi there</i>, 
         
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>The Order# {trackingNumber} creation failed in STAT Portal, it exceeded max retry attempts</i>.
-        
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>Thanks</i>, 
-
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <i>STAT Team</i>” 
-
-
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If further retries are required after the initial 10 attempts, they will take place at intervals of 1800 seconds. 
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Azure_Function/oc_azurefunction.png" />
   
-        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Azure_Function/vnext_azurefunction_2.png" />
+        The temporarily created order records in Cosmos are subsequently transferred to SQL based on the conditions and steps outlined below: 
 
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The JSON data and the API key are supplied as parameters to the <b>PostOrdersUsingSTAT_API</b> method. Subsequently, the order is generated in the SQL database via the endpoint “api/orders”, and the outcome of the order placement, either success or failure, is returned. 
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Within the Service Bus, the CosmosOrder object reference is deserialized to extract the requestId. This requestId is then forwarded to the CreateOrderInSql method. 
+
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The CreateOrderInSql method retrieves the order collection details from the OrderDetails table in Cosmos. It verifies if the requestId exists for the retrieved orders. The order records associated with the requestId are then processed. The Order.OrderInDto.IsSyncCosmosOrder is set to True, the records are fetched from Cosmos and stored in SQL.  
         
-        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Azure_Function/vnext_azurefunction_3.png" />
-
-        ## Cosmos to Sql 
-
-        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Cosmostosql/Cosmostosql_1.png" />
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Azure_Function/oc_azurefunction_1.png" />
+  
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Verify the values of OrderInDto and Order. If they are either null or empty, skip the process. Otherwise, if they contain valid values, execute the PostOrderUsingSTAT_API method, an existing method designed for order creation. To initiate this method, pass the parameters Apikey and OrderInDto (in JSON format).  
         
-        The temporarily created order records in Cosmos are subsequently transferred to SQL based on the conditions and steps outlined below:  
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the response from PostOrderUsingSTAT_API is either null, empty, or an error, the process fails. Conversely, if the PostOrderUsingSTAT_API response yields a value, it will be mapped to OrderOutDto schema.  
         
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Within the Service Bus, the CosmosOrder object reference is deserialized to extract the requestId. This requestId is then forwarded to the CreateOrderInSql method.   
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Next, check if orderOutDto.TrackingNumber exists for the order and map the return response to the Order schema.   
         
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The CreateOrderInSql method retrieves the order collection details from the OrderDetails table in Cosmos. It verifies if the requestId exists for the retrieved orders. The order records associated with the requestId are then processed. The Order.OrderInDto.IsSyncCosmosOrder is set to True, the records are fetched from Cosmos and stored in SQL.    
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; In the OrderStatusValues table, search for the list of records with the IsActive flag. Retrieve the active records and confirm if the very first or default StatusKey value is "submitted". If yes, gather those records.  
         
-        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Cosmostosql/Cosmostosql_2.png" />    
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Next, confirm whether the WebhookGroupStatus.OrderStatusId contains the "submitted" response ID and ensure it matches with OrderStatusValues.OrderStatusValueId.. If this condition is not met, the response value will be set to 0, and the process halts. If it is greater than 0, continue with saving the response in the WebhookNotifications table.    
         
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Verify the values of OrderInDto and Order. If they are either null or empty, skip the process. Otherwise, if they contain valid values, execute the PostOrderUsingSTAT_API method, an existing method designed for order creation. To initiate this method, pass the parameters Apikey and OrderInDto (in JSON format).
-
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the response from PostOrderUsingSTAT_API is either null, empty, or an error, the process fails. Conversely, if the PostOrderUsingSTAT_API response yields a value, it will be mapped to OrderOutDto schema. 
-
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Next, check if orderOutDto.TrackingNumber exists for the order and map the return response to the Order schema. 
-
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; In the OrderStatusValues table, search for the list of records with the IsActive flag. Retrieve the active records and confirm if the very first or default StatusKey value is "submitted". If yes, gather those records.
-
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Next, confirm whether the WebhookGroupStatus.OrderStatusId contains the "submitted" response ID and ensure it matches with OrderStatusValues.OrderStatusValueId.. If this condition is not met, the response value will be set to 0, and the process halts. If it is greater than 0, continue with saving the response in the WebhookNotifications table.  
-
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Serialize the OrderOutDto, and store the value in WebhookBody. 
-
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Serialize the OrderOutDto, and store the value in WebhookBody.  
         
 x-tagGroups:
   - name: General
