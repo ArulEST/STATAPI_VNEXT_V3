@@ -137,7 +137,7 @@ tags:
 
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If no changes are detected, the system sends the existing data for synchronization. This process occurs daily at 2 AM.   
 
-        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Automatic/oc_mastersync_auto_submission.png.png" />
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Automatic/oc_mastersync_auto_submission.png" />
 
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; In the automatic mode, if any modifications occur in the settings outside of application, <b>SyncSettingsCosmos</b> function automatically detects these changes and transmits the updated information to the Azure service bus for settings data synchronization in Cosmos.  
 
@@ -152,7 +152,8 @@ tags:
         <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Automatic/oc_mastersync_auto_holiday.png" />
       
         ## Manual
-        <b>Customer</b>
+        <h2>Customer</h2>
+        
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The request object is deserialized to extract the requestId. This requestId is then passed to the SyncCustomerDetailsCosmos method. 
 
         <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Manual/oc_mastersync_customer.png" />
@@ -161,18 +162,18 @@ tags:
  
         <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Manual/oc_mastersync_customer_1.png" />
         
-        <b>Price</b>
+        <h2>Price</h2>
         <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Manual/oc_mastersync_price.png" />
         
         The request object is deserialized to extract the request ID, and simultaneously, the request type is also extracted. Depending on the type value, the request ID is directed to the appropriate methods as follows: 
 
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the type is "PriceSet," the request ID is forwarded to "SyncPriceDetailsCosmos."
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the type is "PriceSet," the request ID is forwarded to "SyncPriceDetailsCosmos." 
 
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the type is "PriceModifier," the request ID is forwarded to "SyncPriceModifierCosmos." 
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the type is "PriceModifier," the request ID is forwarded to "SyncPriceModifierCosmos."  
 
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the type is "PriceSetClass," the request ID is forwarded to "SyncPriceSetClassCosmos." 
       
-        <b>SyncPriceDetailsCosmos</b>
+        <h5>SyncPriceDetailsCosmos</h5>
 
         <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Manual/oc_mastersync_price_pricedetails_1.png" />
         
@@ -182,7 +183,7 @@ tags:
 
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Retrieve the Price collection from Cosmos, then locate the values in the list by confirming if the customer ID and request ID match. If the condition is satisfied, retrieve those entries and either insert or update them in db.PriceSets. 
 
-        <b>SyncPriceModifierCosmos</b>
+        <h5>SyncPriceModifierCosmos</h5>
 
         <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Manual/oc_mastersync_price_pricemodifier_1.png" />
         
@@ -192,7 +193,7 @@ tags:
 
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Retrieve the Price collection from Cosmos, then locate the values in the list by confirming if the customer ID and request ID match. If the condition is satisfied, retrieve those entries and either insert or update them in db.PriceModifiers. 
 
-        <b>SyncPriceSetClassCosmos</b>
+        <h5>SyncPriceSetClassCosmos</h5>
 
         <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Manual/oc_mastersync_price_priceset_1.png" />
         
@@ -202,14 +203,10 @@ tags:
 
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Retrieve the Price collection from Cosmos, then locate the values in the list by confirming if the customer ID and request ID match. If the condition is satisfied, retrieve those entries and either insert or update them in db.PriceSetClasses. 
 
-        <b>RegionRouteZipCodeSync</b>
+        <h2>RegionRouteZipCodeSync</h2>
         <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Manual/oc_mastersync_route.png" />
         
-        Request object Deserialize and get the request.Id 
-
-        request.Type based on pass the method 
-        
-        Types
+        The request object is deserialized to extract the requestId, and simultaneously, the request type is also extracted. Depending on the type value, the request ID is directed to the appropriate methods as follows: 
         
         <ul>
           <li>RegionandDepots</li>
@@ -227,7 +224,7 @@ tags:
 
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the type is " ZipCode," the request ID is forwarded to " SyncZipcodeDetailsCosmos." 
         
-        <b>SyncRegionDetailsCosmos</b>
+        <h5>SyncRegionDetailsCosmos</h5>
 
         <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Manual/oc_mastersync_route_region_1.png" />
         
@@ -237,7 +234,7 @@ tags:
 
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Retrieve the Price collection from Cosmos, then locate the values in the list by confirming if the customer ID and request ID match. If the condition is satisfied, retrieve those entries and either insert or update them in db.Regions. 
 
-        <b>SyncRouteDetailsCosmos</b>
+        <h5>SyncRouteDetailsCosmos</h5>
 
         <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Manual/oc_mastersync_route_routedetails_1.png" />
         
@@ -247,7 +244,7 @@ tags:
 
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Retrieve the Price collection from Cosmos, then locate the values in the list by confirming if the customer ID and request ID match. If the condition is satisfied, retrieve those entries and either insert or update them in db.Routes. 
 
-        <b>SyncZipcodeDetailsCosmos</b>
+        <h5>SyncZipcodeDetailsCosmos</h5>
 
         <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Manual/oc_mastersync_route_zipcode_1.png" />
         
@@ -258,7 +255,7 @@ tags:
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Retrieve the Price collection from Cosmos, then locate the values in the list by confirming if the customer ID and request ID match. If the condition is satisfied, retrieve those entries and either insert or update them in db.ZipCodes. 
 
 
-        <b>Settings</b>
+        <h2>Settings</h2>
         <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Manual/oc_mastersync_mds.png" />
         
         Request object Deserialize and get the request.Id 
@@ -286,7 +283,7 @@ tags:
         
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the type is " Holiday," the request ID is forwarded to " SyncHolidayCosmos." 
         
-        <b>SyncOrderStatusValueDetailsCosmos</b>
+        <h5>SyncOrderStatusValueDetailsCosmos</h5>
 
         <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Manual/oc_mastersync_mds_orderstatus_1.png" />
         
@@ -296,7 +293,7 @@ tags:
 
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Retrieve the Price collection from Cosmos, then locate the values in the list by confirming if the customer ID and request ID match. If the condition is satisfied, retrieve those entries and either insert or update them in db.OrderStatusValues. 
 
-        <b>SyncSubmissionCosmos</b>
+        <h5>SyncSubmissionCosmos</h5>
 
         <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Manual/oc_mastersync_mds_submission_1.png" />
         
@@ -306,7 +303,7 @@ tags:
 
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Retrieve the Price collection from Cosmos, then locate the values in the list by confirming if the customer ID and request ID match. If the condition is satisfied, retrieve those entries and either insert or update them in db.SubmissionSources. 
 
-        <b>SyncSystemSettingsCosmos</b>
+        <h5>SyncSystemSettingsCosmos</h5>
 
         <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Manual/oc_mastersync_mds_system_1.png" />
         
@@ -316,7 +313,7 @@ tags:
 
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Retrieve the Price collection from Cosmos, then locate the values in the list by confirming if the customer ID and request ID match. If the condition is satisfied, retrieve those entries and either insert or update them in db.vw_SystemSettingValues . 
 
-        <b>SyncHolidayCosmos</b>
+        <h5>SyncHolidayCosmos</h5>
 
         <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Master_Sync/Manual/oc_mastersync_mds_holiday_1.png" />
         
@@ -372,6 +369,9 @@ tags:
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; If the value returned is 0, the process ends. Otherwise, a record is fetched from the trk.WebhookNotification table.  
 
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; The trk.WebhookNotification.WebhookUrl and trk.WebhookNotification.WebhookParams of the retrieved records are sent to an HTTPS POST request. The resulting response status and messages are recorded in the trk.WebhookNotification.Status and trk.WebhookNotification.Message columns within the trk.WebhookNotification table.      
+      
+      # Cosmos Collections vs SQL
+        <img src="https://arulest.github.io/STATAPI_VNEXT_V3/Codesnippet/vNEXT/OrderCreation/Cosmos/collection.png" />
 
       # Code Snippet
         ## Temporary  Order
